@@ -12,6 +12,13 @@ Update rule (Bellman):
 import gym
 import numpy as np
 
+import torch
+import torch.nn as nn
+import torch.nn.init as nn_init
+
+import pdb
+
+
 """
 FrozenLake is a 4x4 grid of blocks: 
     --start
@@ -24,17 +31,18 @@ There is a wind that occasionally blows the agent onto a space they didn't choos
 The reward at each step is 0, goal 1.
 """
 
-env = gym.make('FrozenLake-v0')
 
-"""
-There are 16 possible states (4x4 grid of blocks) and 4 possible actions (directions).
-In total, we need a 16x4 table of Q-values (state, action pairs).
-"""
-
-def tabular_Q():
+def tabular_q():
 
     """this function learns the values of each state/action by manually setting up
     a table of all (state, action) pairs and updating the rewards received."""
+
+    env = gym.make('FrozenLake-v0')
+
+    """
+    There are 16 possible states (4x4 grid of blocks) and 4 possible actions (directions).
+    In total, we need a 16x4 table of Q-values (state, action pairs).
+    """
 
     Q = np.zeros([env.observation_space.n, env.action_space.n])
 
@@ -55,7 +63,7 @@ def tabular_Q():
 
             """greedily pick the highest-value action with random normal noise"""
             cur_action = np.argmax(Q[cur_state, :] + np.random.randn(1, env.action_space.n) * (1./ (i + 1)))
-            next_state, reward, doom, _ = env.step(cur_action)
+            next_state, reward, done, _ = env.step(cur_action)
 
             """update the Q-table with the reward received.
             note that this is structured as the surprise: 
@@ -65,9 +73,12 @@ def tabular_Q():
             cur_state = next_state
             cur_reward += reward
 
-            """if doom (agent fell into a hole), the episode ends"""
-            if doom:
+            """if done (agent fell into a hole), the episode ends"""
+            if done:
                 break
 
         rewards.append(cur_reward)
         print(sum(rewards) / (i + 1.))  # track average reward per episode
+
+
+tabular_q()
