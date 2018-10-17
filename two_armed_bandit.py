@@ -51,27 +51,29 @@ def poke_a_bandit(bandit):
         return 1
     return -1
 
-weights = torch.nn.Parameter(torch.ones(len(bandits)))
-optimizer = torch.optim.SGD([weights], lr=0.1)  # optimizer takes an iterable of torch params
+def simple_bandit():
 
-episodes = 2000
-rewards = []
-for i in range(episodes):
+    weights = torch.nn.Parameter(torch.ones(len(bandits)))
+    optimizer = torch.optim.SGD([weights], lr=0.1)  # optimizer takes an iterable of torch params
 
-    """select action -- epsilon-greedy policy"""
-    if np.random.uniform(0.0, 1.0) < epsilon:
-        choice = np.random.choice(range(len(bandits)))
-    else:
-        choice = torch.argmax(weights)
+    episodes = 2000
+    rewards = []
+    for i in range(episodes):
 
-    bandit = bandits[choice]
-    reward = poke_a_bandit(bandit)
+        """select action -- epsilon-greedy policy"""
+        if np.random.uniform(0.0, 1.0) < epsilon:
+            choice = np.random.choice(range(len(bandits)))
+        else:
+            choice = torch.argmax(weights)
 
-    loss = -torch.log(weights[choice]) * reward
+        bandit = bandits[choice]
+        reward = poke_a_bandit(bandit)
 
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+        loss = -torch.log(weights[choice]) * reward
 
-    rewards.append(reward)
-    print('\nAverage reward: {}'.format(np.sum(rewards) / (i + 1.)))
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        rewards.append(reward)
+        print('\nAverage reward: {}'.format(np.sum(rewards) / (i + 1.)))
