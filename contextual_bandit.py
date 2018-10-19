@@ -1,5 +1,5 @@
 """
-2018-10-08
+2018-10-16
 Exercise from Arthur Juliani's RL tutorial (adapted for Pytorch)
 Part 1.5: Contextual bandits!
 """
